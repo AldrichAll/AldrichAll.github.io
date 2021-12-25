@@ -9,9 +9,10 @@
     <p>s表示第二个参数：中断速度(节)</p>
     <p>t表示第三个参数：温度(摄氏度)</p>
     <p>l表示第四个参数：压力高度(千英尺)</p>
-    <input type="text" value="w" id="input20" readonly="readonly" size="12"/> <input type="text" value="s" id="input30" readonly="readonly" size="12"> <input type="text" value="t" id="input40" readonly="readonly" size="12"> <input type="text" value="el" id="input50" readonly="readonly" size="12">
+    <p>cbe表示计算出来的修正的刹车能量：修正的刹车能量(百万英尺磅)</p>
+    <input type="text" value="w" id="input20" readonly="readonly" size="12"/> <input type="text" value="s" id="input30" readonly="readonly" size="12"> <input type="text" value="t" id="input40" readonly="readonly" size="12"> <input type="text" value="el" id="input50" readonly="readonly" size="12"> = <input type="text" value="cbe" id="input_60" readonly="readonly" size="12">
     <br/>
-    <input type="text" id="input2" size="12"/> <input type="text" id="input3" size="12"> <input type="text" id="input4"size="12"> <input type="text" id="input5" size="12">=<input type="text" id="input6" size="12">
+    <input type="text" id="input2" size="12"/> <input type="text" id="input3" size="12"> <input type="text" id="input4"size="12"> <input type="text" id="input5" size="12"> = <input type="text" id = "input_engy_el" size="12"> & <input type="text" id="input6" size="15">
     <br/>
     <input type="button" value="Calculate" onclick="getsum()" style="margin-left:290px;margin-top:23px"/>
     <br />
@@ -26,16 +27,35 @@
             var t=parseFloat(byid("input4").value);
             var el=parseFloat(byid("input5").value);
             
-            var flightReult = getFinalResult(w, s, t, el);
-            if (flightReult == -17.0) {
+            var engy_el = getFinalResult(w, s, t, el);
+            //填充修正的刹车能量
+            byid("input_engy_el").value = engy_el;
+
+            //分析刹车能量
+            if (engy_el < 17.0) {
                 alert("无需特殊程序");
-            } else if (flightReult == -29.4) {
+                byid("input6").value = "无需特殊程序";
+            } else if (engy_el > 29.4 && engy_el < 41) {
                 alert("注意区");
-            } else if (flightReult == -41.0) {
+                byid("input6").value = "注意区";
+            } else if (engy_el > 41) {
                 alert("熔塞熔化区");
-            } else {
-                alert("需冷却" + flightReult + "分钟");
-                byid("input6").value=flightReult.toFixed(4);
+                byid("input6").value = "熔塞熔化区";
+            } else if ((engy_el > 17 || engy_el == 17) && (engy_el < 19 || engy_el == 19)) {
+                alert("需冷却" + (itplt(17,19,engy_el,6.7,16.0)).toString() + "分钟");
+                byid("input6").value = "需冷却" + (itplt(17,19,engy_el,6.7,16.0)).toString() + "分钟";
+            } else if (engy_el > 19 && (engy_el < 20.9 || engy_el == 20.9)) {
+                alert("需冷却" + (itplt(19,20.9,engy_el,16.0,24.1)).toString() + "分钟");
+                byid("input6").value = "需冷却" + (itplt(19,20.9,engy_el,16.0,24.1)).toString() + "分钟";
+            } else if (engy_el > 20.9 && (engy_el < 23.5 || engy_el == 23.5)) {
+                alert("需冷却" + (itplt(20.9,23.5,engy_el,24.1,34.2)).toString() + "分钟");
+                byid("input6").value = "需冷却" + (itplt(20.9,23.5,engy_el,24.1,34.2)).toString() + "分钟";
+            } else if (engy_el > 23.5 && (engy_el < 26.9 || engy_el == 26.9)) {
+                alert("需冷却" + (itplt(23.5,26.9,engy_el,34.2,45.9)).toString() + "分钟");
+                byid("input6").value = "需冷却" + (itplt(23.5,26.9,engy_el,34.2,45.9)).toString() + "分钟";
+            } else if (engy_el > 26.9 && (engy_el < 29.4 || engy_el == 29.4)) {
+                alert("需冷却" + (itplt(26.9,29.4,engy_el,45.9,53.3)).toString() + "分钟");
+                byid("input6").value = "需冷却" + (itplt(26.9,29.4,engy_el,45.9,53.3)).toString() + "分钟";
             }
 
         }
@@ -273,42 +293,8 @@
 
             //温度插值后再进行压力高度插值得到最终刹车能量
             engy_el=itplt(elmt[y1][x1].elvt,elmt[y1][x1+1].elvt,el,engy_t1,engy_t2);
-            
-            //分析刹车能量
-            if(engy_el<17) {
-                //return "无需特殊程序";
-                return -17.0;
-            }
-            if((engy_el>17||engy_el==17)&&(engy_el<19||engy_el==19)){
-                //return "需冷却" + (itplt(17,19,engy_el,6.7,16.0)).toString() + "分钟";
-                return itplt(17,19,engy_el,6.7,16.0);
-            }
-            if(engy_el>19&&(engy_el<20.9||engy_el==20.9)) {
-                //return "需冷却" + (itplt(19,20.9,engy_el,16.0,24.1)).toString() + "分钟";
-                return itplt(19,20.9,engy_el,16.0,24.1);
-            }
-            if(engy_el>20.9&&(engy_el<23.5||engy_el==23.5)) {
-                //return "需冷却" + (itplt(20.9,23.5,engy_el,24.1,34.2)).toString() + "分钟";
-                return itplt(20.9,23.5,engy_el,24.1,34.2);
-            }
-            if(engy_el>23.5&&(engy_el<26.9||engy_el==26.9)) {
-                //return "需冷却" + (itplt(23.5,26.9,engy_el,34.2,45.9)).toString() + "分钟";
-                return itplt(23.5,26.9,engy_el,34.2,45.9);
-            }
-            if(engy_el>26.9&&(engy_el<29.4||engy_el==29.4)) {
-                //return "需冷却" + (itplt(26.9,29.4,engy_el,45.9,53.3)).toString() + "分钟";
-                return itplt(26.9,29.4,engy_el,45.9,53.3);
-            }
-            if(engy_el>29.4&&engy_el<41) {
-                //return "注意区";
-                return -29.4;
-            }
-            if(engy_el>41) {
-                //return "熔塞熔化区";
-                return -41.0;
-            }
-
-            return "";
+        
+            return engy_el;
         }
 
         function createFlghtObject(wt, spd, engy) {
