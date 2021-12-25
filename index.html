@@ -27,10 +27,17 @@
             var el=parseFloat(byid("input5").value);
             
             var flightReult = getFinalResult(w, s, t, el);
-            alert("result is " + flightReult);
+            if (flightReult == -17.0) {
+                alert("无需特殊程序");
+            } else if (flightReult == -29.4) {
+                alert("注意区");
+            } else if (flightReult == -41.0) {
+                alert("熔塞熔化区");
+            } else {
+                alert("需冷却" + flightReult + "分钟");
+                byid("input6").value=flightReult.toFixed(4);
+            }
 
-            var res = Math.pow(2*1.0*w*s/t,0.5) * Math.pow(el,0.5);
-            byid("input6").value=res.toFixed(6);
         }
 	
 
@@ -269,28 +276,36 @@
             
             //分析刹车能量
             if(engy_el<17) {
-                return "无需特殊程序";
+                //return "无需特殊程序";
+                return -17.0;
             }
             if((engy_el>17||engy_el==17)&&(engy_el<19||engy_el==19)){
-                return "需冷却" + (itplt(17,19,engy_el,6.7,16.0)).toString() + "分钟";
+                //return "需冷却" + (itplt(17,19,engy_el,6.7,16.0)).toString() + "分钟";
+                return itplt(17,19,engy_el,6.7,16.0);
             }
             if(engy_el>19&&(engy_el<20.9||engy_el==20.9)) {
-                return "需冷却" + (itplt(19,20.9,engy_el,16.0,24.1)).toString() + "分钟";
+                //return "需冷却" + (itplt(19,20.9,engy_el,16.0,24.1)).toString() + "分钟";
+                return itplt(19,20.9,engy_el,16.0,24.1);
             }
             if(engy_el>20.9&&(engy_el<23.5||engy_el==23.5)) {
-                return "需冷却" + (itplt(20.9,23.5,engy_el,24.1,34.2)).toString() + "分钟";
+                //return "需冷却" + (itplt(20.9,23.5,engy_el,24.1,34.2)).toString() + "分钟";
+                return itplt(20.9,23.5,engy_el,24.1,34.2);
             }
             if(engy_el>23.5&&(engy_el<26.9||engy_el==26.9)) {
-                return "需冷却" + (itplt(23.5,26.9,engy_el,34.2,45.9)).toString() + "分钟";
+                //return "需冷却" + (itplt(23.5,26.9,engy_el,34.2,45.9)).toString() + "分钟";
+                return itplt(23.5,26.9,engy_el,34.2,45.9);
             }
             if(engy_el>26.9&&(engy_el<29.4||engy_el==29.4)) {
-                return "需冷却" + (itplt(26.9,29.4,engy_el,45.9,53.3)).toString() + "分钟";
+                //return "需冷却" + (itplt(26.9,29.4,engy_el,45.9,53.3)).toString() + "分钟";
+                return itplt(26.9,29.4,engy_el,45.9,53.3);
             }
             if(engy_el>29.4&&engy_el<41) {
-                return "注意区";
+                //return "注意区";
+                return -29.4;
             }
             if(engy_el>41) {
-                return "熔塞熔化区";
+                //return "熔塞熔化区";
+                return -41.0;
             }
 
             return "";
